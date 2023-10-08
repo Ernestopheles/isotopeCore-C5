@@ -3,3 +3,5 @@
 /composer.lock
 /package-lock.json
 /.php_cs.cache
+
+/composer.json
