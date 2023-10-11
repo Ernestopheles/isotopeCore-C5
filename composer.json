@@ -31,17 +31,13 @@
         "forum": "https://community.contao.org/de/forumdisplay.php?111-isotope",
         "docs": "https://docs.isotopeecommerce.org/"
     },
-    "require":{
-        "php": "^7.4 || ^8.0",
+    "require": {
+        "php": "^8.1",
         "composer-runtime-api": "^2",
-        "contao/core-bundle": "^4.9",
         "contao-community-alliance/composer-plugin": "^2.4 || ^3.0",
-        "terminal42/contao-conditionalselectmenu":"^3.0.3 || ^4.0",
         "terminal42/dcawizard": "^2.3",
-        "codefog/contao-haste": "^4.24.3",
         "menatwork/contao-multicolumnwizard-bundle": "^3.4",
         "terminal42/contao-tablelookupwizard": "^3.2 || ^4.0",
-        "terminal42/notification_center": "^1.0",
         "terminal42/dc_multilingual": "^4.0",
         "tecnickcom/tcpdf": "^6.2.22",
         "patchwork/utf8": "^1.2",
@@ -49,16 +45,32 @@
         "symfony/filesystem": "^4.4 || ^5.0 || ^6.0",
         "symfony/http-client": "^4.4 || ^5.0 || ^6.0",
         "symfony/polyfill-php80": "^1.25",
-        "hashids/hashids": "^4.1"
+        "hashids/hashids": "^4.1",
+        "contao/easy-coding-standard": "*"
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../contao_notification_center"
+        },
+        {
+            "type": "path",
+            "url": "../conditionalselectmenu"
+        }
+    ],
     "require-dev": {
-        "contao/core-bundle": "4.9.*",
+        "terminal42/notification_center": "dev-main",
+        "terminal42/contao-conditionalselectmenu": "dev-main",
+        "contao/core-bundle": "^5.2",
+        "codefog/contao-haste": "^5.1",
         "contao/manager-plugin": "^2.0",
         "terminal42/contao-fineuploader": "^2.0 || ^3.0",
         "terminal42/contao-changelanguage": "^3.0",
         "petschko/dhl-php-sdk": "dev-master@dev",
         "mpay24/mpay24-php": "^4.0",
-        "friendsofphp/php-cs-fixer": "^2.14"
+        "friendsofphp/php-cs-fixer": "^3",
+        "phpstan/phpstan": "^1.10",
+        "bamarni/composer-bin-plugin": "^1.8"
     },
     "suggest": {
         "terminal42/contao-fineuploader": "For file uploads in frontend using FineUploader",
@@ -89,6 +101,10 @@
         ]
     },
     "extra":{
+        "bamarni-bin": {
+            "bin-links": false,
+            "target-directory": "tools"
+        },
         "contao-manager-plugin": "Isotope\\ContaoManager\\Plugin",
         "contao": {
             "sources":{
@@ -100,5 +116,25 @@
                 "system/modules/isotope/config/upgrade.php"
             ]
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "contao-components/installer": true,
+            "php-http/discovery": true,
+            "contao/manager-plugin": true,
+            "contao-community-alliance/composer-plugin": true,
+            "bamarni/composer-bin-plugin": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "scripts": {
+        "all": [
+            "@ecs",
+            "@cs-fixer",
+            "@phpstan"
+        ],
+        "ecs": "@php tools/ecs/vendor/bin/ecs check system --config ecs.php --ansi",
+        "cs-fixer": "@php tools/php-cs-fixer/vendor/bin/php-cs-fixer system",
+        "phpstan": "@php tools/phpstan/vendor/bin/phpstan analyze system --ansi"
     }
 }
