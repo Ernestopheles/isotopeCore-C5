@@ -15,8 +15,8 @@ use Contao\Environment;
 use Contao\FrontendUser;
 use Contao\StringUtil;
 use Contao\System;
-use Haste\Units\Mass\Weight;
-use Haste\Units\Mass\WeightAggregate;
+// use Haste\Units\Mass\Weight;
+// use Haste\Units\Mass\WeightAggregate;
 use Isotope\Frontend;
 use Isotope\Interfaces\IsotopeProductCollection;
 use Isotope\Interfaces\IsotopeShipping;
@@ -58,7 +58,8 @@ use Isotope\Translation;
  * @property bool   $logging
  * @property bool   $enabled
  */
-abstract class Shipping extends TypeAgent implements IsotopeShipping, WeightAggregate
+// abstract class Shipping extends TypeAgent implements IsotopeShipping, WeightAggregate
+abstract class Shipping extends TypeAgent implements IsotopeShipping
 {
     const QUANTITY_MODE_ITEMS = 'cart_items';
     const QUANTITY_MODE_PRODUCTS = 'cart_products';
@@ -104,160 +105,160 @@ abstract class Shipping extends TypeAgent implements IsotopeShipping, WeightAggr
      */
     public function isAvailable()
     {
-        if (TL_MODE === 'BE') {
-            return true;
-        }
+        // if (TL_MODE === 'BE') {
+        //     return true;
+        // }
 
-        if (!$this->enabled && BE_USER_LOGGED_IN !== true) {
-            return false;
-        }
+        // if (!$this->enabled && BE_USER_LOGGED_IN !== true) {
+        //     return false;
+        // }
 
-        if ($this->address_type) {
-            $billingAddress = Isotope::getCart()->getBillingAddress();
-            $shippingAddress = Isotope::getCart()->getShippingAddress();
+        // if ($this->address_type) {
+        //     $billingAddress = Isotope::getCart()->getBillingAddress();
+        //     $shippingAddress = Isotope::getCart()->getShippingAddress();
 
-            if ($this->address_type === 'custom' && $billingAddress->id === $shippingAddress->id) {
-                return false;
-            }
+        //     if ($this->address_type === 'custom' && $billingAddress->id === $shippingAddress->id) {
+        //         return false;
+        //     }
 
-            if ($this->address_type === 'billing' && $billingAddress->id !== $shippingAddress->id) {
-                return false;
-            }
-        }
+        //     if ($this->address_type === 'billing' && $billingAddress->id !== $shippingAddress->id) {
+        //         return false;
+        //     }
+        // }
 
-        if (($this->guests && FE_USER_LOGGED_IN === true) || ($this->protected && FE_USER_LOGGED_IN !== true)) {
-            return false;
-        }
+        // if (($this->guests && FE_USER_LOGGED_IN === true) || ($this->protected && FE_USER_LOGGED_IN !== true)) {
+        //     return false;
+        // }
 
-        if ($this->protected) {
-            $arrGroups = StringUtil::deserialize($this->groups);
+        // if ($this->protected) {
+        //     $arrGroups = StringUtil::deserialize($this->groups);
 
-            if (!\is_array($arrGroups)
-                || empty($arrGroups)
-                || !\count(array_intersect($arrGroups, FrontendUser::getInstance()->groups))
-            ) {
-                return false;
-            }
-        }
+        //     if (!\is_array($arrGroups)
+        //         || empty($arrGroups)
+        //         || !\count(array_intersect($arrGroups, FrontendUser::getInstance()->groups))
+        //     ) {
+        //         return false;
+        //     }
+        // }
 
-        if (($this->minimum_total > 0 && $this->minimum_total > Isotope::getCart()->getSubtotal())
-            || ($this->maximum_total > 0 && $this->maximum_total < Isotope::getCart()->getSubtotal())
-        ) {
-            return false;
-        }
+        // if (($this->minimum_total > 0 && $this->minimum_total > Isotope::getCart()->getSubtotal())
+        //     || ($this->maximum_total > 0 && $this->maximum_total < Isotope::getCart()->getSubtotal())
+        // ) {
+        //     return false;
+        // }
 
-        $objScale = Isotope::getCart()->addToScale();
+        // $objScale = Isotope::getCart()->addToScale();
 
-        if (($minWeight = Weight::createFromTimePeriod($this->minimum_weight)) !== null
-            && $objScale->isLessThan($minWeight)
-        ) {
-            return false;
-        }
+        // if (($minWeight = Weight::createFromTimePeriod($this->minimum_weight)) !== null
+        //     && $objScale->isLessThan($minWeight)
+        // ) {
+        //     return false;
+        // }
 
-        if (($maxWeight = Weight::createFromTimePeriod($this->maximum_weight)) !== null
-            && $objScale->isMoreThan($maxWeight)
-        ) {
-            return false;
-        }
+        // if (($maxWeight = Weight::createFromTimePeriod($this->maximum_weight)) !== null
+        //     && $objScale->isMoreThan($maxWeight)
+        // ) {
+        //     return false;
+        // }
 
-        if ($this->minimum_quantity > 0 || $this->maximum_quantity > 0) {
-            switch ($this->quantity_mode) {
-                case static::QUANTITY_MODE_ITEMS:
-                    $quantity =  Isotope::getCart()->sumItemsQuantity();
-                    break;
+        // if ($this->minimum_quantity > 0 || $this->maximum_quantity > 0) {
+        //     switch ($this->quantity_mode) {
+        //         case static::QUANTITY_MODE_ITEMS:
+        //             $quantity =  Isotope::getCart()->sumItemsQuantity();
+        //             break;
 
-                case static::QUANTITY_MODE_PRODUCTS:
-                    $quantity =  Isotope::getCart()->countItems();
-                    break;
+        //         case static::QUANTITY_MODE_PRODUCTS:
+        //             $quantity =  Isotope::getCart()->countItems();
+        //             break;
 
-                default:
-                    throw new \InvalidArgumentException(sprintf('Unknown quantity mode "%s"', $this->quantity_mode));
-            }
+        //         default:
+        //             throw new \InvalidArgumentException(sprintf('Unknown quantity mode "%s"', $this->quantity_mode));
+        //     }
 
-            if (($this->minimum_quantity > 0 && $this->minimum_quantity > $quantity)
-                || ($this->maximum_quantity > 0 && $this->maximum_quantity < $quantity)
-            ) {
-                return false;
-            }
-        }
+        //     if (($this->minimum_quantity > 0 && $this->minimum_quantity > $quantity)
+        //         || ($this->maximum_quantity > 0 && $this->maximum_quantity < $quantity)
+        //     ) {
+        //         return false;
+        //     }
+        // }
 
-        $arrConfigs = StringUtil::deserialize($this->config_ids);
-        if (\is_array($arrConfigs) && !empty($arrConfigs) && !\in_array(Isotope::getConfig()->id, $arrConfigs)) {
-            return false;
-        }
+        // $arrConfigs = StringUtil::deserialize($this->config_ids);
+        // if (\is_array($arrConfigs) && !empty($arrConfigs) && !\in_array(Isotope::getConfig()->id, $arrConfigs)) {
+        //     return false;
+        // }
 
-        $objAddress = Isotope::getCart()->getShippingAddress();
+        // $objAddress = Isotope::getCart()->getShippingAddress();
 
-        $arrCountries = StringUtil::deserialize($this->countries);
-        if (\is_array($arrCountries) && !empty($arrCountries)) {
-            if (!\in_array($objAddress->country, $arrCountries, true)) {
-                return false;
-            }
+        // $arrCountries = StringUtil::deserialize($this->countries);
+        // if (\is_array($arrCountries) && !empty($arrCountries)) {
+        //     if (!\in_array($objAddress->country, $arrCountries, true)) {
+        //         return false;
+        //     }
 
-            $arrSubdivisions = StringUtil::deserialize($this->subdivisions);
-            if (\is_array($arrSubdivisions)
-                && !empty($arrSubdivisions)
-                && !\in_array($objAddress->subdivision, $arrSubdivisions, true)
-            ) {
-                return false;
-            }
-        }
+        //     $arrSubdivisions = StringUtil::deserialize($this->subdivisions);
+        //     if (\is_array($arrSubdivisions)
+        //         && !empty($arrSubdivisions)
+        //         && !\in_array($objAddress->subdivision, $arrSubdivisions, true)
+        //     ) {
+        //         return false;
+        //     }
+        // }
 
-        // Check if address has a valid postal code
-        if ($this->postalCodes != '') {
-            $arrCodes = Frontend::parsePostalCodes($this->postalCodes);
+        // // Check if address has a valid postal code
+        // if ($this->postalCodes != '') {
+        //     $arrCodes = Frontend::parsePostalCodes($this->postalCodes);
 
-            if (!\in_array($objAddress->postal, $arrCodes)) {
-                return false;
-            }
-        }
+        //     if (!\in_array($objAddress->postal, $arrCodes)) {
+        //         return false;
+        //     }
+        // }
 
-        if ('calculation' !== $this->product_types_condition) {
-            $arrConfigTypes = StringUtil::deserialize($this->product_types);
+        // if ('calculation' !== $this->product_types_condition) {
+        //     $arrConfigTypes = StringUtil::deserialize($this->product_types);
 
-            if (\is_array($arrConfigTypes) && \count($arrConfigTypes) > 0) {
-                $arrItems = Isotope::getCart()->getItems();
-                $arrItemTypes = array();
+        //     if (\is_array($arrConfigTypes) && \count($arrConfigTypes) > 0) {
+        //         $arrItems = Isotope::getCart()->getItems();
+        //         $arrItemTypes = array();
 
-                foreach ($arrItems as $objItem) {
-                    if ($objItem->hasProduct()) {
-                        $productType = $objItem->getProduct()->getType();
-                        $arrItemTypes[] = null === $productType ? 0 : (int) $productType->id;
+        //         foreach ($arrItems as $objItem) {
+        //             if ($objItem->hasProduct()) {
+        //                 $productType = $objItem->getProduct()->getType();
+        //                 $arrItemTypes[] = null === $productType ? 0 : (int) $productType->id;
 
-                    } elseif ('onlyAvailable' === $this->product_types_condition) {
-                        // If one product in cart is not of given type, shipping method is not available
-                        return false;
-                    }
-                }
+        //             } elseif ('onlyAvailable' === $this->product_types_condition) {
+        //                 // If one product in cart is not of given type, shipping method is not available
+        //                 return false;
+        //             }
+        //         }
 
-                $arrItemTypes = array_unique($arrItemTypes);
+        //         $arrItemTypes = array_unique($arrItemTypes);
 
-                switch ($this->product_types_condition) {
-                    case 'onlyAvailable':
-                        return 0 === \count(array_diff($arrItemTypes, $arrConfigTypes));
+        //         switch ($this->product_types_condition) {
+        //             case 'onlyAvailable':
+        //                 return 0 === \count(array_diff($arrItemTypes, $arrConfigTypes));
 
-                    case 'oneAvailable':
-                        return \count(array_intersect($arrConfigTypes, $arrItemTypes)) > 0;
+        //             case 'oneAvailable':
+        //                 return \count(array_intersect($arrConfigTypes, $arrItemTypes)) > 0;
 
-                    case 'allAvailable':
-                        return \count(array_intersect($arrConfigTypes, $arrItemTypes)) === \count($arrConfigTypes);
+        //             case 'allAvailable':
+        //                 return \count(array_intersect($arrConfigTypes, $arrItemTypes)) === \count($arrConfigTypes);
 
-                    default:
-                        throw new \UnexpectedValueException(
-                            'Unknown product type condition "' . $this->product_types_condition . '"'
-                        );
-                }
-            }
-        }
+        //             default:
+        //                 throw new \UnexpectedValueException(
+        //                     'Unknown product type condition "' . $this->product_types_condition . '"'
+        //                 );
+        //         }
+        //     }
+        // }
 
-        // !HOOK: modify if shipping method is available
-        if (isset($GLOBALS['ISO_HOOKS']['shippingAvailable']) && \is_array($GLOBALS['ISO_HOOKS']['shippingAvailable'])) {
-            foreach ($GLOBALS['ISO_HOOKS']['shippingAvailable'] as $callback) {
-                if (!System::importStatic($callback[0])->{$callback[1]}($this)) {
-                    return false;
-                }
-            }
-        }
+        // // !HOOK: modify if shipping method is available
+        // if (isset($GLOBALS['ISO_HOOKS']['shippingAvailable']) && \is_array($GLOBALS['ISO_HOOKS']['shippingAvailable'])) {
+        //     foreach ($GLOBALS['ISO_HOOKS']['shippingAvailable'] as $callback) {
+        //         if (!System::importStatic($callback[0])->{$callback[1]}($this)) {
+        //             return false;
+        //         }
+        //     }
+        // }
 
         return true;
     }
@@ -369,13 +370,13 @@ abstract class Shipping extends TypeAgent implements IsotopeShipping, WeightAggr
         return ProductCollectionSurcharge::createForShippingInCollection($this, $objCollection);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getWeight()
-    {
-        return Weight::createFromTimePeriod($this->shipping_weight);
-    }
+    // /**
+    //  * {@inheritdoc}
+    //  */
+    // public function getWeight()
+    // {
+    //     return Weight::createFromTimePeriod($this->shipping_weight);
+    // }
 
     /**
      * Logs information for this shipping method if enabled.
